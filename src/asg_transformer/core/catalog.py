@@ -11,7 +11,7 @@ class CatalogItem:
 
 class KnowledgeCatalog:
     def __init__(self, data_dir: Path):
-        self.data_dir = data_dir
+        self.data_dir = Path(data_dir).expanduser().resolve()
         self.techniques = self._items("techniques.json")
         self.software = self._items("software.json")
         self.groups = self._items("groups.json")
@@ -23,7 +23,12 @@ class KnowledgeCatalog:
     def _load(self, filename: str):
         path = self.data_dir / filename
         if not path.exists():
-            raise FileNotFoundError(f"Required catalog file not found: {path}")
+            raise FileNotFoundError(
+                "Required catalog file not found: "
+                f"{path.resolve()}\n"
+                f"Configured data directory: {self.data_dir}\n"
+                "Set ASG_DATA_DIR to a valid catalog directory if the data was moved."
+            )
         return json.loads(path.read_text(encoding="utf-8"))
 
     def _items(self, filename: str) -> list[CatalogItem]:
