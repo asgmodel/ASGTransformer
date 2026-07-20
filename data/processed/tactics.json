@@ -1,0 +1,104 @@
+{
+  "initial access": [
+    "Drive-by Compromise",
+    "Exploit Public-Facing Application",
+    "Exploitation of Remote Services",
+    "External Remote Services",
+    "Internet Accessible Device",
+    "Remote Services",
+    "Replication Through Removable Media",
+    "Rogue Master",
+    "Spearphishing Attachment",
+    "Supply Chain Compromise",
+    "Transient Cyber Asset",
+    "Wireless Compromise"
+  ],
+  "execution": [
+    "Change Operating Mode",
+    "Command-Line Interface",
+    "Execution through API",
+    "Graphical User Interface",
+    "Hooking",
+    "Modify Controller Tasking",
+    "Native API",
+    "Scripting",
+    "User Execution"
+  ],
+  "persistence": [
+    "Modify Program",
+    "Module Firmware",
+    "Project File Infection",
+    "System Firmware",
+    "Valid Accounts"
+  ],
+  "privilege escalation": [
+    "Exploitation for Privilege Escalation"
+  ],
+  "evasion": [
+    "Exploitation for Evasion",
+    "Indicator Removal on Host",
+    "Masquerading",
+    "Rootkit",
+    "Spoof Reporting Message"
+  ],
+  "discovery": [
+    "Network Connection Enumeration",
+    "Network Sniffing",
+    "Remote System Discovery",
+    "Remote System Information Discovery",
+    "Wireless Sniffing"
+  ],
+  "lateral movement": [
+    "Default Credentials",
+    "Lateral Tool Transfer",
+    "Program Download"
+  ],
+  "collection": [
+    "Automated Collection",
+    "Data from Information Repositories",
+    "Detect Operating Mode",
+    "I/O Image",
+    "Man in the Middle",
+    "Monitor Process State",
+    "Point & Tag Identification",
+    "Program Upload",
+    "Screen Capture"
+  ],
+  "command and control": [
+    "Commonly Used Port",
+    "Connection Proxy",
+    "Standard Application Layer Protocol"
+  ],
+  "inhibit response function": [
+    "Activate Firmware Update Mode",
+    "Alarm Suppression",
+    "Block Command Message",
+    "Block Reporting Message",
+    "Block Serial COM",
+    "Data Destruction",
+    "Denial of Service",
+    "Device Restart/Shutdown",
+    "Manipulate I/O Image",
+    "Modify Alarm Settings",
+    "Service Stop"
+  ],
+  "impair process control": [
+    "Brute Force I/O",
+    "Modify Parameter",
+    "Unauthorized Command Message"
+  ],
+  "impact": [
+    "Damage to Property",
+    "Denial of Control",
+    "Denial of View",
+    "Loss of Availability",
+    "Loss of Control",
+    "Loss of Productivity and Revenue",
+    "Loss of Protection",
+    "Loss of Safety",
+    "Loss of View",
+    "Manipulation of Control",
+    "Manipulation of View",
+    "Theft of Operational Information"
+  ]
+}
