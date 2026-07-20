@@ -104,9 +104,9 @@ Supports:
 Clone the repository
 
 ```bash
-git clone https://github.com/your-org/asg-transformer.git
+git clone https://github.com/your-org/ASGTransformer.git
 
-cd asg-transformer
+cd ASGTransformer
 ```
 
 Create virtual environment
