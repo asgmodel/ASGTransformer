@@ -1,514 +1,356 @@
-# ASG Transformer Framework
+# ASG Transformer Professional
 
-<div align="center">
+Enterprise-ready Transformer framework for semantic cyber-threat classification and tactic-aware scenario generation. The project combines Sentence Transformers, an optional cross-encoder reranker, ATT&CK-style knowledge catalogs, beam-search planning, FastAPI, structured logging, runtime monitoring, offline evaluation, Docker, CI/CD, and optional Weights & Biases experiment tracking.
 
-# 🛡️ ASG Transformer Framework
+> Use only in authorized defensive research, cyber-range training, security validation, and threat-intelligence workflows.
 
-### AI-Powered Cyber Attack Scenario Generation using Transformer-Based Semantic Intelligence
+## Core capabilities
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)]()
-[![FastAPI](https://img.shields.io/badge/FastAPI-Latest-green.svg)]()
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-red.svg)]()
-[![Transformers](https://img.shields.io/badge/HuggingFace-Transformers-yellow.svg)]()
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)]()
+- Semantic retrieval for techniques, software, and threat groups.
+- Tactic-aware cyber scenario generation using beam search.
+- Weighted semantic and transition scoring.
+- Optional cross-encoder reranking.
+- Fine-tuning pipeline based on contrastive learning.
+- Recall@K, MRR, and latency evaluation.
+- W&B experiment tracking and model artifacts.
+- FastAPI endpoints with Swagger and ReDoc.
+- Runtime request, error, and latency monitoring.
+- Structured JSON logging.
+- CLI, Docker, Compose, Makefile, tests, and GitHub Actions.
 
-Enterprise-grade framework for semantic cyber attack scenario generation based on
-Transformer models, ATT&CK knowledge graphs, and AI-driven reasoning.
+## Architecture
 
-</div>
+```text
+Client / CLI
+     │
+     ▼
+FastAPI + Validation + Observability
+     │
+     ▼
+ASGTransformerService
+     ├── KnowledgeCatalog
+     ├── SemanticEncoder
+     │     ├── Sentence Transformer
+     │     └── Optional Cross Encoder
+     └── TransformerScenarioGenerator
+           ├── Tactic Ordering
+           ├── Transition Matrix
+           └── Beam Search
+     │
+     ▼
+Ranked Intelligence / Ordered Scenario
+```
 
----
+## Project structure
 
-# Overview
-
-ASG Transformer is a modern AI framework designed to generate realistic cyber attack
-scenarios using semantic understanding rather than traditional rule-based matching.
-
-Unlike conventional systems based on TF-IDF, SVM, or keyword matching, ASG Transformer
-leverages Transformer encoders to understand attacker objectives, techniques,
-tactics, software, threat groups, and attack paths in a unified semantic space.
-
-The framework is designed for:
-
-- Cyber Threat Intelligence
-- Attack Simulation
-- Security Training
-- Purple Team Exercises
-- SOC Knowledge Assistance
-- Research
-- Enterprise Security Automation
-
----
-
-# Features
-
-## AI & Machine Learning
-
-- Transformer-based semantic encoding
-- Context-aware attack understanding
-- Multi-label prediction
-- Beam Search attack path generation
-- Confidence scoring
-- Embedding-based similarity search
-- Domain-specific fine tuning
-- GPU acceleration
-
----
-
-## Cyber Knowledge
-
-Supports:
-
-- ATT&CK Techniques
-- ATT&CK Tactics
-- Threat Groups
-- Malware / Software
-- Attack Relationships
-- Transition Graphs
-- Knowledge Graph Expansion
-
----
-
-## API
-
-- FastAPI
-- OpenAPI / Swagger
-- Async API
-- REST endpoints
-- JSON responses
-- Automatic validation
-
----
-
-## Engineering
-
-- Clean Architecture
-- Dependency Injection
-- Modular Design
-- Configuration Management
-- Docker Support
-- Logging
-- Unit Testing
-- Production Ready
-
----
-
-# Installation
+```text
+ASGTransformer/
+├── .github/workflows/ci.yml       # Automated linting and tests
+├── data/processed/                # Techniques, tactics, groups, software, transitions
+├── docs/ARCHITECTURE.md           # Architecture notes
+├── examples/client.py             # Python API client
+├── models/                        # Fine-tuned encoder and checkpoints
+├── scripts/                       # API and training convenience scripts
+├── src/asg_transformer/
+│   ├── api/                       # FastAPI application
+│   ├── cli/                       # `asg` command-line interface
+│   ├── core/                      # Catalog, schemas, and service layer
+│   ├── evaluation/                # Recall@K, MRR, and latency evaluation
+│   ├── models/                    # Encoder and scenario generator
+│   ├── monitoring/                # W&B integration
+│   ├── observability/             # Structured logs and runtime metrics
+│   ├── training/                  # Transformer fine-tuning
+│   └── config.py                  # Environment-based configuration
+├── tests/                         # Unit and API tests
+├── .env.example
+├── Dockerfile
+├── docker-compose.yml
+├── Makefile
+├── pyproject.toml
+├── CONTRIBUTING.md
+├── SECURITY.md
+└── LICENSE
+```
 
 ## Requirements
 
-- Python 3.11+
-- pip
-- Git
+- Python 3.10–3.12 recommended
+- pip 23+
+- 4 GB RAM minimum
+- NVIDIA GPU optional for faster training
 
-Clone the repository
+## Local installation
 
 ```bash
-git clone https://github.com/your-org/ASGTransformer.git
-
-cd ASGTransformer
+python -m venv .venv
 ```
 
-Create virtual environment
-
-Linux
+Linux/macOS:
 
 ```bash
-python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Windows
+Windows PowerShell:
 
 ```powershell
-python -m venv .venv
-
-.venv\Scripts\activate
+.venv\Scripts\Activate.ps1
 ```
 
-Upgrade pip
+Install the complete development and training environment:
 
 ```bash
-pip install --upgrade pip
-```
-
-Install dependencies
-
-```bash
-pip install -e .
-```
-
-or
-
-```bash
-pip install -e ".[train]"
-```
-
-or
-
-```bash
+python -m pip install --upgrade pip setuptools wheel
 pip install -e ".[dev,train]"
-```
-
----
-
-# Configuration
-
-Copy the configuration file
-
-```bash
 cp .env.example .env
 ```
 
-Example
+Windows:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+## Google Colab installation
+
+```python
+%cd /content/ASGTransformer
+!pip install --upgrade pip setuptools wheel
+!pip install -e ".[dev,train]"
+```
+
+Confirm the project configuration:
+
+```python
+!asg doctor
+```
+
+## Configuration
+
+The `.env` file is read from the project root. Relative paths are resolved from the project root, not from the current shell directory.
 
 ```env
 ASG_DATA_DIR=data/processed
+ASG_MODEL_DIR=models/asg-encoder
+ASG_MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
+ASG_DEVICE=auto
+ASG_TOP_K=5
+ASG_MAX_SCENARIO_STEPS=8
+ASG_MIN_CONFIDENCE=0.25
+ASG_ENABLE_RERANKER=false
+ASG_RERANKER_NAME=cross-encoder/ms-marco-MiniLM-L-6-v2
+ASG_LOG_LEVEL=INFO
 
-ASG_MODEL_DIR=models
-
-MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
-
-DEVICE=auto
-
-API_PORT=8000
+WANDB_API_KEY=
+WANDB_PROJECT=asg-transformer
+WANDB_ENTITY=
+WANDB_MODE=online
 ```
 
----
-
-# Running the API
-
-Start the API server
+## Run the API
 
 ```bash
-uvicorn asg_transformer.api.main:app \
-    --host 0.0.0.0 \
-    --port 8000
+asg serve --host 0.0.0.0 --port 8000
 ```
 
-Swagger
+Development mode:
 
-```
-http://localhost:8000/docs
-```
-
-Redoc
-
-```
-http://localhost:8000/redoc
+```bash
+uvicorn asg_transformer.api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
----
+Interfaces:
 
-# Training
+- Swagger: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+- Health: `http://localhost:8000/health`
+- Runtime metrics: `http://localhost:8000/metrics`
 
-Train the Transformer encoder
+## API usage
+
+Classify techniques:
+
+```bash
+curl -X POST http://localhost:8000/v1/classify/technique \
+  -H "Content-Type: application/json" \
+  -d '{"text":"The adversary modifies controller logic and suppresses alarms","top_k":5}'
+```
+
+Generate a scenario:
+
+```bash
+curl -X POST http://localhost:8000/v1/scenarios/generate \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Remote access to an industrial controller followed by unsafe process manipulation","max_steps":6,"beam_width":5,"transition_weight":0.35}'
+```
+
+Python client:
+
+```bash
+python examples/client.py
+```
+
+## CLI usage
+
+```bash
+asg doctor
+asg predict "Credential theft followed by remote execution" --task technique --top-k 5
+asg scenario "Initial access followed by persistence and lateral movement" --max-steps 8
+asg serve --port 8000
+```
+
+## Training
+
+Basic training:
 
 ```bash
 python -m asg_transformer.training.train_encoder \
-    --base-model sentence-transformers/all-MiniLM-L6-v2 \
-    --epochs 10 \
-    --batch-size 16
+  --base-model sentence-transformers/all-MiniLM-L6-v2 \
+  --data-dir data/processed \
+  --output-dir models/asg-encoder \
+  --epochs 10 \
+  --batch-size 16 \
+  --learning-rate 2e-5
 ```
 
-Advanced training
+The service automatically loads `models/asg-encoder` when it exists. Otherwise, it loads the configured base model.
+
+### W&B monitoring
+
+Authenticate:
+
+```bash
+wandb login
+```
+
+Train with online monitoring:
 
 ```bash
 python -m asg_transformer.training.train_encoder \
-    --epochs 25 \
-    --learning-rate 2e-5 \
-    --warmup-ratio 0.1 \
-    --batch-size 32 \
-    --fp16
+  --wandb \
+  --wandb-project asg-transformer \
+  --wandb-run-name minilm-baseline \
+  --epochs 10 \
+  --batch-size 16
 ```
 
-The trained model will be stored in
-
-```
-models/
-    asg-transformer/
-```
-
----
-
-# Evaluation
-
-Evaluate the model
+Offline mode:
 
 ```bash
-python -m asg_transformer.training.evaluate
+python -m asg_transformer.training.train_encoder \
+  --wandb \
+  --wandb-mode offline \
+  --epochs 10
 ```
 
-Example output
-
-```
-Accuracy
-
-Technique Prediction
-
-95.2%
-
-Tactic Prediction
-
-98.1%
-
-Threat Group
-
-94.7%
-
-Semantic Retrieval
-
-97.3%
-```
-
----
-
-# Testing
-
-Run all tests
+Synchronize later:
 
 ```bash
-pytest
+wandb sync wandb/offline-run-*
 ```
 
-Run with coverage
+Tracked information includes hyperparameters, dataset size, evaluation scores, training steps, runtime, CPU/GPU utilization collected by W&B, run status, and model artifacts.
+
+## Evaluation
 
 ```bash
-pytest --cov=asg_transformer
+python -m asg_transformer.evaluation.evaluate \
+  --data-dir data/processed \
+  --model-dir models/asg-encoder \
+  --top-k 5 \
+  --output reports/evaluation.json
 ```
 
-Run a single module
+Reported metrics:
+
+- Recall@K
+- Mean Reciprocal Rank (MRR)
+- Average inference latency
+- P95 inference latency
+
+## Testing and quality
 
 ```bash
-pytest tests/test_service.py
+pytest -q
+pytest -q --cov=asg_transformer --cov-report=term-missing
+ruff check src tests
 ```
 
----
-
-# Docker
-
-Build
+Convenience commands:
 
 ```bash
-docker build -t asg-transformer .
+make install
+make test
+make lint
+make serve
+make train
+make evaluate
 ```
 
-Run
+## Docker
 
 ```bash
-docker run \
--p 8000:8000 \
-asg-transformer
+docker build -t asg-transformer:3.0.0 .
+docker run --rm -p 8000:8000 --env-file .env asg-transformer:3.0.0
 ```
 
----
+Docker Compose:
 
-# API Example
+```bash
+docker compose up --build
+```
 
-Request
+## Runtime monitoring
+
+`GET /metrics` returns in-process operational information:
 
 ```json
 {
-    "goal":"Compromise Active Directory",
-    "environment":"Windows Enterprise",
-    "objective":"Privilege Escalation"
+  "requests": 120,
+  "server_errors": 0,
+  "latency_ms": {
+    "avg": 42.3,
+    "p50": 31.0,
+    "p95": 88.5,
+    "p99": 120.2
+  },
+  "routes": {
+    "/health": 20,
+    "/v1/scenarios/generate": 100
+  }
 }
 ```
 
-Response
+For multi-worker production deployments, connect the service to an external metrics platform such as Prometheus rather than aggregating only in process memory.
 
-```json
-{
-    "techniques":[
-        "...",
-        "...",
-        "..."
-    ],
-    "tactics":[
-        "...",
-        "..."
-    ],
-    "software":[
-        "...",
-        "..."
-    ],
-    "attack_path":[
-        "...",
-        "...",
-        "..."
-    ],
-    "confidence":0.96
-}
+## Data files
+
+The project expects these files under `ASG_DATA_DIR`:
+
+```text
+techniques.json
+software.json
+groups.json
+tactics.json
+technique_to_tactic.json
+transition_scores.json
 ```
 
----
+The application fails fast with the absolute missing path when required data is unavailable.
 
-# Project Structure
+## Production recommendations
 
-```
-ASGTransformer
-│
-├── data/
-│   ├── raw/
-│   ├── processed/
-│   └── embeddings/
-│
-├── models/
-│   ├── checkpoints/
-│   ├── transformer/
-│   └── exported/
-│
-├── src/
-│   └── asg_transformer/
-│       │
-│       ├── api/
-│       │   ├── routes/
-│       │   ├── schemas/
-│       │   └── main.py
-│       │
-│       ├── application/
-│       │   ├── services/
-│       │   └── handlers/
-│       │
-│       ├── domain/
-│       │   ├── entities/
-│       │   ├── interfaces/
-│       │   └── models/
-│       │
-│       ├── infrastructure/
-│       │   ├── repository/
-│       │   ├── embeddings/
-│       │   └── persistence/
-│       │
-│       ├── training/
-│       │
-│       ├── inference/
-│       │
-│       ├── core/
-│       │
-│       ├── config.py
-│       │
-│       └── utils/
-│
-├── tests/
-│
-├── notebooks/
-│
-├── scripts/
-│
-├── Dockerfile
-│
-├── docker-compose.yml
-│
-├── pyproject.toml
-│
-├── README.md
-│
-└── .env.example
-```
+- Pin and scan container images.
+- Keep W&B projects private when experiment data is sensitive.
+- Never commit API keys or confidential threat-intelligence records.
+- Place the API behind authentication, TLS, rate limiting, and an API gateway.
+- Use an external model registry and object storage for large model artifacts.
+- Add domain-specific labeled examples before treating scores as production-grade probabilities.
 
----
+## Current validation
 
-# Architecture
+The source tree compiles successfully. Core catalog, path resolution, scenario logic, and runtime metrics tests pass. Full API and model-loading tests require the project dependencies and access to the configured Sentence Transformer model.
 
-```
-Client
+## License
 
-      │
-
-      ▼
-
- FastAPI API
-
-      │
-
-      ▼
-
-Application Layer
-
-      │
-
-      ▼
-
-Transformer Service
-
-      │
-
-      ▼
-
-Sentence Transformer Encoder
-
-      │
-
-      ▼
-
-Semantic Retrieval Engine
-
-      │
-
-      ▼
-
-Knowledge Catalog
-
-      │
-
-      ▼
-
-Scenario Generator
-
-      │
-
-      ▼
-
-JSON Response
-```
-
----
-
-# Technologies
-
-- Python
-- FastAPI
-- PyTorch
-- HuggingFace Transformers
-- Sentence Transformers
-- Pydantic
-- NumPy
-- Scikit-Learn
-- Docker
-- Uvicorn
-- Pytest
-
----
-
-# Future Roadmap
-
-- Knowledge Graph Integration
-- Graph Neural Networks
-- Multi-Agent Planning
-- Reinforcement Learning
-- ATT&CK Live Synchronization
-- LLM-assisted Scenario Generation
-- Distributed Inference
-- ONNX Runtime
-- TensorRT Optimization
-- Kubernetes Deployment
-
----
-
-# License
-
-MIT License
-
----
-
-# Citation
-
-```bibtex
-@software{asg_transformer,
-  title={ASG Transformer Framework},
-  author={ASG Research Group},
-  year={2026},
-  url={https://github.com/your-org/asg-transformer}
-}
-```
+MIT. See `LICENSE`.

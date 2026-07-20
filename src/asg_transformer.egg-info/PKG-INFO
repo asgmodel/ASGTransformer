@@ -1,0 +1,252 @@
+Metadata-Version: 2.4
+Name: asg-transformer
+Version: 3.0.0
+Summary: Transformer-based cyber attack scenario intelligence API
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: fastapi<1.0,>=0.115
+Requires-Dist: uvicorn[standard]<1.0,>=0.30
+Requires-Dist: pydantic-settings<3.0,>=2.6
+Requires-Dist: torch<3.0,>=2.2
+Requires-Dist: transformers<6.0,>=4.48
+Requires-Dist: sentence-transformers<6.0,>=3.3
+Requires-Dist: numpy<3.0,>=1.26
+Requires-Dist: orjson<4.0,>=3.10
+Requires-Dist: structlog<26.0,>=24.4
+Provides-Extra: dev
+Requires-Dist: pytest<10,>=8; extra == "dev"
+Requires-Dist: pytest-cov<7,>=5; extra == "dev"
+Requires-Dist: httpx<1,>=0.27; extra == "dev"
+Requires-Dist: ruff<1,>=0.9; extra == "dev"
+Requires-Dist: mypy<2,>=1.14; extra == "dev"
+Provides-Extra: train
+Requires-Dist: datasets<5,>=3.2; extra == "train"
+Requires-Dist: accelerate<2,>=1.2; extra == "train"
+Requires-Dist: scikit-learn<2,>=1.5; extra == "train"
+Requires-Dist: wandb<1,>=0.19; extra == "train"
+Dynamic: license-file
+
+# ASG Transformer — Professional Edition
+
+إعادة بناء احترافية لمشروع ASG لتصنيف معلومات التهديدات السيبرانية وتوليد سيناريوهات هجوم مرتبة باستخدام Transformer دلالي.
+
+## ما الذي تغير؟
+
+- استبدال TF-IDF/SVM وملفات النماذج القديمة بطبقة Transformer قابلة للتدريب.
+- إزالة المسارات الثابتة والاعتماد على إعدادات بيئية.
+- فصل واضح بين البيانات، النموذج، منطق السيناريو، التدريب، والـAPI.
+- منع القوائم المشتركة mutable defaults وكتل `except` الصامتة.
+- توليد السيناريو باستخدام Beam Search يجمع التشابه الدلالي وانتقال التقنيات.
+- API حديث باستخدام FastAPI مع مخططات Pydantic وتوثيق Swagger تلقائي.
+
+## المعمارية
+
+```text
+Input Description
+      │
+      ▼
+Transformer Bi-Encoder
+      │
+      ├── Technique Retrieval (78)
+      ├── Software Retrieval (19)
+      └── Threat Group Retrieval (13)
+      │
+      ▼
+Tactic-aware Beam Search
+Semantic Score + Transition Score
+      │
+      ▼
+Ordered Cyber Scenario + Confidence
+```
+
+## التشغيل
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -e ".[dev,train]"
+cp .env.example .env
+uvicorn asg_transformer.api.main:app --reload
+```
+
+Swagger: `http://localhost:8000/docs`
+
+## تدريب الـTransformer
+
+```bash
+python -m asg_transformer.training.train_encoder \
+  --base-model sentence-transformers/all-MiniLM-L6-v2 \
+  --epochs 10 \
+  --batch-size 16
+```
+
+بعد التدريب سيُحفظ النموذج في `models/asg-encoder`، وستستخدمه الخدمة تلقائيًا.
+
+## أمثلة API
+
+```bash
+curl -X POST http://localhost:8000/v1/classify/technique \
+  -H "Content-Type: application/json" \
+  -d '{"text":"An adversary changes PLC logic and suppresses alarms","top_k":5}'
+
+ curl -X POST http://localhost:8000/v1/scenarios/generate \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Remote access to an industrial controller followed by unsafe process manipulation","max_steps":6,"beam_width":5}'
+```
+
+## ملاحظة علمية
+
+البيانات الأصلية تحتوي غالبًا على وصف واحد لكل فئة؛ لذلك يعتمد الإصدار الحالي على fine-tuning دلالي contrastive بدل classifier مغلق. لتحسين الدقة أكثر، أضف أمثلة واقعية متعددة لكل تقنية ومجموعة وبرمجية، ثم درّب النموذج مجددًا وقِس Recall@K وMRR وNDCG.
+
+---
+
+## Experiment Tracking with Weights & Biases
+
+ASG Transformer includes optional **Weights & Biases (W&B)** integration for centralized experiment tracking, model comparison, system monitoring, and artifact versioning.
+
+### Monitored information
+
+- Training configuration and hyperparameters
+- Number of training examples
+- Validation cosine/Spearman score
+- Final evaluation score
+- Epoch and global training step
+- Total training runtime
+- CPU, GPU, and memory statistics collected by the W&B SDK
+- Best and latest model artifacts
+- Run status and failure information
+
+### Install W&B support
+
+```bash
+pip install -e ".[train]"
+```
+
+### Authenticate
+
+From a terminal:
+
+```bash
+wandb login
+```
+
+In Google Colab:
+
+```python
+!pip install -e ".[train]"
+!wandb login
+```
+
+You can also set the API key through an environment variable:
+
+```python
+import os
+os.environ["WANDB_API_KEY"] = "YOUR_WANDB_API_KEY"
+```
+
+Do not commit API keys to Git or include them directly in source files.
+
+### Train with online monitoring
+
+```bash
+python -m asg_transformer.training.train_encoder \
+  --wandb \
+  --wandb-project asg-transformer \
+  --wandb-run-name minilm-baseline \
+  --epochs 10 \
+  --batch-size 16 \
+  --learning-rate 2e-5
+```
+
+### Train in offline mode
+
+Offline mode stores metrics locally and does not require an active network connection during training:
+
+```bash
+python -m asg_transformer.training.train_encoder \
+  --wandb \
+  --wandb-mode offline \
+  --epochs 10
+```
+
+Synchronize the offline run later:
+
+```bash
+wandb sync wandb/offline-run-*
+```
+
+### Environment configuration
+
+```env
+WANDB_API_KEY=
+WANDB_PROJECT=asg-transformer
+WANDB_ENTITY=
+WANDB_MODE=online
+```
+
+### Convenience script
+
+```bash
+chmod +x scripts/train_wandb.sh
+./scripts/train_wandb.sh
+```
+
+Optional overrides:
+
+```bash
+WANDB_PROJECT=asg-production \
+WANDB_MODE=online \
+ASG_EPOCHS=20 \
+ASG_BATCH_SIZE=32 \
+./scripts/train_wandb.sh
+```
+
+### Colab example
+
+```python
+%cd /content/ASGTransformer
+
+!pip install -e ".[train]"
+!wandb login
+
+!python -m asg_transformer.training.train_encoder \
+    --wandb \
+    --wandb-project asg-transformer \
+    --wandb-run-name colab-training \
+    --data-dir data/processed \
+    --output-dir models/asg-encoder \
+    --epochs 10 \
+    --batch-size 16
+```
+
+### W&B architecture
+
+```text
+Training Pipeline
+       │
+       ├── Hyperparameters ───────────────┐
+       ├── Evaluation Metrics ────────────┤
+       ├── Runtime and System Metrics ────┤
+       └── Model Checkpoints ─────────────┤
+                                          ▼
+                               Weights & Biases Run
+                                          │
+                     ┌────────────────────┼────────────────────┐
+                     ▼                    ▼                    ▼
+                Dashboard            Comparisons          Artifacts
+```
+
+The integration is implemented in:
+
+```text
+src/asg_transformer/monitoring/
+├── __init__.py
+└── wandb_tracker.py
+```
+
+The training integration is implemented in:
+
+```text
+src/asg_transformer/training/train_encoder.py
+```

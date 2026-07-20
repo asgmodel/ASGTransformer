@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     min_confidence: float = Field(0.25, ge=0.0, le=1.0)
     enable_reranker: bool = False
     reranker_name: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    log_level: str = "INFO"
 
     @model_validator(mode="after")
     def resolve_relative_paths(self) -> "Settings":

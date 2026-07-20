@@ -1,0 +1,2 @@
+[console_scripts]
+asg = asg_transformer.cli.main:main

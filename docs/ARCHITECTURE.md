@@ -1,0 +1,2 @@
+# Architecture
+The API layer validates requests and exposes health, runtime metrics, classification, and scenario endpoints. The service layer owns the catalog, encoder, and generator. The semantic encoder performs normalized embedding retrieval with optional cross-encoder reranking. The scenario generator applies tactic-aware beam search and transition scores. Training and evaluation are isolated command-line pipelines, while W&B remains optional.
