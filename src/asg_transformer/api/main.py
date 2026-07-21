@@ -40,7 +40,24 @@ def classify(task:str,request:PredictionRequest):
     try: ranked=get_service().classify(request.text,task,request.top_k or settings.top_k)
     except ValueError as exc: raise HTTPException(status_code=400,detail=str(exc)) from exc
     return ClassificationResponse(task=task,candidates=[Candidate(label=x.item.label,score=x.score,description=x.item.description,tactic=x.item.tactic) for x in ranked])
-@app.post("/v1/scenarios/generate",response_model=ScenarioResponse)
-def generate_scenario(request:ScenarioRequest):
-    service=get_service(); steps=service.generator.generate(request.text,request.max_steps or settings.max_scenario_steps,request.beam_width,request.transition_weight); software=service.classify(request.text,"software",3); groups=service.classify(request.text,"group",3); confidence=sum(x.combined_score for x in steps)/len(steps) if steps else 0.0
-    return ScenarioResponse(input_text=request.text,confidence=confidence,steps=[ScenarioStep(order=i+1,tactic=x.tactic,technique=x.technique,semantic_score=x.semantic_score,transition_score=x.transition_score,combined_score=x.combined_score) for i,x in enumerate(steps)],related_software=[Candidate(label=x.item.label,score=x.score,description=x.item.description) for x in software],related_groups=[Candidate(label=x.item.label,score=x.score,description=x.item.description) for x in groups])
+@app.post("/v1/scenarios/generate", response_model=ScenarioResponse)
+def generate_scenario(request: ScenarioRequest):
+    result = get_service().generate_text(
+        request.text,
+        max_steps=request.max_steps or settings.max_scenario_steps,
+        beam_width=request.beam_width,
+        transition_weight=request.transition_weight,
+        total_duration_minutes=request.total_duration_minutes,
+        language=request.language,
+    )
+    return ScenarioResponse(
+        input_text=result.input_text,
+        title=result.title,
+        executive_summary=result.executive_summary,
+        generated_text=result.generated_text,
+        confidence=result.confidence,
+        total_duration_minutes=result.total_duration_minutes,
+        steps=[ScenarioStep(**step) for step in result.steps],
+        related_software=[Candidate(**item) for item in result.related_software],
+        related_groups=[Candidate(**item) for item in result.related_groups],
+    )
