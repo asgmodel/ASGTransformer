@@ -5,7 +5,7 @@ from functools import lru_cache
 from asg_transformer.config import settings
 from asg_transformer.core.catalog import KnowledgeCatalog
 from asg_transformer.models.semantic_encoder import SemanticEncoder
-from asg_transformer.models.unified_model import ASGUnifiedModel
+from asg_transformer.models.asg_transformer import ASGTransformer, ASGTransformerConfig
 
 
 class ASGTransformerService:
@@ -18,10 +18,10 @@ class ASGTransformerService:
             settings.device,
             reranker,
         )
-        self.model = ASGUnifiedModel(
+        self.model = ASGTransformer(
             catalog=self.catalog,
             encoder=self.encoder,
-            default_max_steps=settings.max_scenario_steps,
+            config=ASGTransformerConfig(default_max_steps=settings.max_scenario_steps),
         )
         # Backward-compatible access.
         self.generator = self.model.scenario_generator

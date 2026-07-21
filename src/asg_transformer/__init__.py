@@ -1,4 +1,18 @@
-from asg_transformer.models.unified_model import ASGUnifiedModel, UnifiedScenarioOutput
+from asg_transformer.models.asg_transformer import (
+    ASGTransformer,
+    ASGTransformerConfig,
+    ASGTransformerOutput,
+    ASGUnifiedModel,
+    UnifiedScenarioOutput,
+)
 
-__version__ = "4.0.0"
-__all__ = ["ASGUnifiedModel", "UnifiedScenarioOutput", "__version__"]
+__version__ = "5.0.0"
+
+__all__ = [
+    "ASGTransformer",
+    "ASGTransformerConfig",
+    "ASGTransformerOutput",
+    "ASGUnifiedModel",
+    "UnifiedScenarioOutput",
+    "__version__",
+]

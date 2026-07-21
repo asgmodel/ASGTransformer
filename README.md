@@ -1,4 +1,4 @@
-# ASG Unified Transformer Scenario Model
+# ASGTransformer
 
 A production-oriented, Hugging Face-ready defensive cybersecurity model that accepts text and returns a professional, grounded scenario as text and structured JSON.
 
@@ -25,7 +25,7 @@ Text + JSON Output
 
 ## Key Capabilities
 
-- One deployable model interface: `ASGUnifiedModel`
+- One deployable model interface: `ASGTransformer`
 - Text-to-text scenario generation
 - Catalog-grounded semantic retrieval
 - Beam-search scenario planning
@@ -101,7 +101,7 @@ python -m asg_transformer.training.train_encoder \
 from asg_transformer.config import settings
 from asg_transformer.core.catalog import KnowledgeCatalog
 from asg_transformer.models.semantic_encoder import SemanticEncoder
-from asg_transformer import ASGUnifiedModel
+from asg_transformer import ASGTransformer
 
 catalog = KnowledgeCatalog(settings.data_dir)
 encoder = SemanticEncoder(
@@ -109,7 +109,7 @@ encoder = SemanticEncoder(
     model_dir=str(settings.model_dir),
     device=settings.device,
 )
-model = ASGUnifiedModel(catalog, encoder)
+model = ASGTransformer(catalog, encoder)
 
 result = model.generate(
     "Create a defensive enterprise scenario focused on phishing and credential access.",
@@ -126,13 +126,13 @@ print(result.to_dict())
 
 ```bash
 python scripts/export_huggingface.py \
-  --output-dir dist/ASG-Unified-Scenario-Model
+  --output-dir dist/ASGTransformer
 ```
 
 The exported directory contains everything required by the unified model:
 
 ```text
-dist/ASG-Unified-Scenario-Model/
+dist/ASGTransformer/
 ├── asg_config.json
 ├── README.md
 ├── encoder/
@@ -162,15 +162,15 @@ Publish the unified package:
 
 ```bash
 python scripts/export_huggingface.py \
-  --output-dir dist/ASG-Unified-Scenario-Model \
-  --repo-id asgmodel/ASG-Unified-Scenario-Model
+  --output-dir dist/ASGTransformer \
+  --repo-id asgmodel/ASGTransformer
 ```
 
 Or from Python:
 
 ```python
 url = model.push_to_hub(
-    repo_id="asgmodel/ASG-Unified-Scenario-Model",
+    repo_id="asgmodel/ASGTransformer",
     private=False,
 )
 print(url)
@@ -179,10 +179,10 @@ print(url)
 ## Load from Hugging Face
 
 ```python
-from asg_transformer import ASGUnifiedModel
+from asg_transformer import ASGTransformer
 
-model = ASGUnifiedModel.from_pretrained(
-    "asgmodel/ASG-Unified-Scenario-Model"
+model = ASGTransformer.from_pretrained(
+    "asgmodel/ASGTransformer"
 )
 
 result = model.generate(
@@ -258,7 +258,7 @@ src/asg_transformer/
 
 ## Important Design Note
 
-`ASGUnifiedModel` is the deployable model. `TransformerScenarioGenerator` is an internal planning component. The exported Hugging Face repository bundles the encoder, catalog, planner configuration, duration settings, and generation logic behind one public interface.
+`ASGTransformer` is the deployable model. `TransformerScenarioGenerator` is an internal planning component. The exported Hugging Face repository bundles the encoder, catalog, planner configuration, duration settings, and generation logic behind one public interface.
 
 ## Intended Use
 

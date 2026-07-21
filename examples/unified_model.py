@@ -1,6 +1,6 @@
-from asg_transformer import ASGUnifiedModel
+from asg_transformer import ASGTransformer
 
-model = ASGUnifiedModel.from_pretrained("asgmodel/ASG-Unified-Scenario-Model")
+model = ASGTransformer.from_pretrained("asgmodel/ASGTransformer")
 result = model.generate(
     "Build a defensive enterprise training scenario focused on phishing, credential access, and lateral movement.",
     max_steps=6,

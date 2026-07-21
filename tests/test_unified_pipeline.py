@@ -6,7 +6,7 @@ import numpy as np
 
 from asg_transformer.core.catalog import KnowledgeCatalog
 from asg_transformer.models.semantic_encoder import RankedItem
-from asg_transformer.models.unified_model import ASGUnifiedModel
+from asg_transformer import ASGTransformer
 
 
 class FakeSentenceModel:
@@ -27,7 +27,7 @@ class FakeEncoder:
 
 def test_unified_model_returns_professional_text(tmp_path: Path):
     data_dir = Path(__file__).parents[1] / "data" / "processed"
-    model = ASGUnifiedModel(KnowledgeCatalog(data_dir), FakeEncoder(), default_max_steps=4)
+    model = ASGTransformer(KnowledgeCatalog(data_dir), FakeEncoder(), default_max_steps=4)
     output = model.generate("Defensive phishing and credential access exercise", total_duration_minutes=120)
     assert output.generated_text
     assert output.steps
@@ -37,7 +37,7 @@ def test_unified_model_returns_professional_text(tmp_path: Path):
 
 def test_unified_model_exports_single_package(tmp_path: Path):
     data_dir = Path(__file__).parents[1] / "data" / "processed"
-    model = ASGUnifiedModel(KnowledgeCatalog(data_dir), FakeEncoder())
+    model = ASGTransformer(KnowledgeCatalog(data_dir), FakeEncoder())
     exported = model.save_pretrained(tmp_path / "model")
     assert (exported / "asg_config.json").exists()
     assert (exported / "encoder" / "modules.json").exists()

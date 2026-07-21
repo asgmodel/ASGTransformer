@@ -6,10 +6,10 @@ from pathlib import Path
 from asg_transformer.config import settings
 from asg_transformer.core.catalog import KnowledgeCatalog
 from asg_transformer.models.semantic_encoder import SemanticEncoder
-from asg_transformer.models.unified_model import ASGUnifiedModel
+from asg_transformer import ASGTransformer
 
 
-def build_model() -> ASGUnifiedModel:
+def build_model() -> ASGTransformer:
     catalog = KnowledgeCatalog(settings.data_dir)
     encoder = SemanticEncoder(
         settings.model_name,
@@ -17,12 +17,12 @@ def build_model() -> ASGUnifiedModel:
         settings.device,
         settings.reranker_name if settings.enable_reranker else None,
     )
-    return ASGUnifiedModel(catalog=catalog, encoder=encoder)
+    return ASGTransformer(catalog=catalog, encoder=encoder)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Export or publish the unified ASG model")
-    parser.add_argument("--output-dir", default="dist/asg-unified-model")
+    parser = argparse.ArgumentParser(description="Export or publish ASGTransformer")
+    parser.add_argument("--output-dir", default="dist/ASGTransformer")
     parser.add_argument("--repo-id")
     parser.add_argument("--private", action="store_true")
     args = parser.parse_args()

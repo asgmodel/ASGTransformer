@@ -27,6 +27,6 @@ notebook_login()
 
 ```python
 !python scripts/export_huggingface.py \
-  --output-dir dist/ASG-Unified-Scenario-Model \
-  --repo-id asgmodel/ASG-Unified-Scenario-Model
+  --output-dir dist/ASGTransformer \
+  --repo-id asgmodel/ASGTransformer
 ```
