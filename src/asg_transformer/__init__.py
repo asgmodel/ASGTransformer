@@ -16,3 +16,5 @@ __all__ = [
     "UnifiedScenarioOutput",
     "__version__",
 ]
+
+from asg_transformer.hf import ASGTransformerConfig as HFASGTransformerConfig, ASGTransformerForCausalLM
