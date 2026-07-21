@@ -50,7 +50,7 @@ pip install -e ".[dev,train]"
 ### Google Colab
 
 ```python
-%cd /content/ASG-Transformer-Professional
+%cd ASGTransformer
 !pip install --upgrade pip setuptools wheel
 !pip install -e ".[dev,train]"
 ```
