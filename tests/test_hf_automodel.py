@@ -38,7 +38,7 @@ def test_save_and_load_with_auto_model(tmp_path: Path) -> None:
         },
         semantic_projection_dim=8,
         duration_bins=[5, 10, 20],
-        num_scenario_labels=4,
+        scenario_labels=["a", "b", "c", "d"],
         bos_token_id=1, eos_token_id=2, pad_token_id=0,
         architectures=["ASGTransformerForCausalLM"],
         auto_map={
@@ -84,7 +84,7 @@ def test_all_heads_roundtrip(tmp_path: Path) -> None:
             "n_ctx": 16, "n_embd": 12, "n_layer": 1, "n_head": 2,
             "bos_token_id": 1, "eos_token_id": 2, "pad_token_id": 0,
         },
-        semantic_projection_dim=6, duration_bins=[5, 15], num_scenario_labels=3,
+        semantic_projection_dim=6, duration_bins=[5, 15], scenario_labels=["a", "b", "c"],
     )
     model = ASGTransformerForCausalLM(config)
     before = {k: v.detach().clone() for k, v in model.state_dict().items()}

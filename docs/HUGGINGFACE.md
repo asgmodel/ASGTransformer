@@ -1,43 +1,11 @@
-# Hugging Face Deployment
+# ASGTransformer Hugging Face Workflow
 
-## 1. Train the encoder
+ASGTransformer uses the standard Transformers custom-model pattern:
 
-```bash
-python -m asg_transformer.training.train_encoder \
-  --output-dir models/asg-encoder \
-  --epochs 10 \
-  --batch-size 16
-```
+- `ASGTransformerConfig` inherits `PretrainedConfig`.
+- `ASGTransformerForCausalLM` inherits `PreTrainedModel` and `GenerationMixin`.
+- `config.json` declares `auto_map` for `AutoConfig` and `AutoModelForCausalLM`.
+- Custom Python files are copied into the exported model repository.
+- All model parameters are stored in Safetensors.
 
-## 2. Export the unified package
-
-```bash
-python scripts/export_huggingface.py \
-  --output-dir dist/ASGTransformer
-```
-
-The package contains the encoder weights, the knowledge catalog, unified model configuration, model card, dependency file, and inference handler.
-
-## 3. Authenticate
-
-```bash
-hf auth login
-```
-
-## 4. Publish
-
-```bash
-python scripts/export_huggingface.py \
-  --output-dir dist/ASGTransformer \
-  --repo-id asgmodel/ASGTransformer
-```
-
-## 5. Load
-
-```python
-from asg_transformer import ASGTransformer
-
-model = ASGTransformer.from_pretrained("asgmodel/ASGTransformer")
-result = model.generate("Create a defensive scenario for credential access.")
-print(result.generated_text)
-```
+Use `scripts/export_transformers_model.py` to create the repository and `scripts/verify_transformers_checkpoint.py` to validate it before upload.

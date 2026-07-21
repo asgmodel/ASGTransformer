@@ -1,48 +1,37 @@
+from __future__ import annotations
+
 from pydantic import BaseModel, Field
 
 
-class PredictionRequest(BaseModel):
-    text: str = Field(min_length=3, max_length=10_000)
-    top_k: int | None = Field(default=None, ge=1, le=50)
-
-
-class Candidate(BaseModel):
-    label: str
-    score: float
-    description: str | None = None
-    tactic: str | None = None
-
-
-class ClassificationResponse(BaseModel):
-    task: str
-    candidates: list[Candidate]
-
-
-class ScenarioRequest(PredictionRequest):
-    max_steps: int | None = Field(default=None, ge=2, le=20)
-    beam_width: int = Field(default=5, ge=1, le=20)
-    transition_weight: float = Field(default=0.35, ge=0.0, le=1.0)
-    total_duration_minutes: int | None = Field(default=180, ge=20, le=1440)
+class ScenarioRequest(BaseModel):
+    text: str = Field(min_length=3, max_length=20_000)
     language: str = Field(default="en", pattern="^(en|ar)$")
+    max_new_tokens: int | None = Field(default=None, ge=16, le=4096)
+    do_sample: bool = False
+    temperature: float = Field(default=0.7, gt=0.0, le=2.0)
+    top_p: float = Field(default=0.9, gt=0.0, le=1.0)
 
 
-class ScenarioStep(BaseModel):
-    order: int
-    tactic: str
-    technique: str
-    duration_minutes: int
-    semantic_score: float
-    transition_score: float
-    combined_score: float
+class KnowledgeMatch(BaseModel):
+    source: str
+    text: str
+    score: float
 
 
 class ScenarioResponse(BaseModel):
     input_text: str
-    title: str
-    executive_summary: str
     generated_text: str
-    confidence: float
-    total_duration_minutes: int
-    steps: list[ScenarioStep]
-    related_software: list[Candidate]
-    related_groups: list[Candidate]
+    estimated_duration_minutes: int
+    duration_probabilities: list[float]
+    scenario_type: str
+    scenario_probabilities: list[float]
+    knowledge_matches: list[KnowledgeMatch]
+
+
+class EmbeddingRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=20_000)
+
+
+class EmbeddingResponse(BaseModel):
+    dimension: int
+    embedding: list[float]

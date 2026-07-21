@@ -1,15 +1,22 @@
-.PHONY: install test lint serve train evaluate docker
+.PHONY: install test lint compile export verify
+
 install:
-	pip install -e ".[dev,train]"
+	python -m pip install -e ".[dev,train]"
+
 test:
-	pytest -q --cov=asg_transformer
+	pytest -q
+
 lint:
-	ruff check src tests
-serve:
-	uvicorn asg_transformer.api.main:app --host 0.0.0.0 --port 8000 --reload
-train:
-	python -m asg_transformer.training.train_encoder --epochs 10 --batch-size 16
-evaluate:
-	python -m asg_transformer.evaluation.evaluate --top-k 5
-docker:
-	docker compose up --build
+	ruff check src tests scripts examples
+
+compile:
+	python -m compileall -q src scripts examples
+
+export:
+	python scripts/export_transformers_model.py \
+		--base-model $(BASE_MODEL) \
+		--knowledge-dir data/processed \
+		--output-dir dist/ASGTransformer
+
+verify:
+	python scripts/verify_transformers_checkpoint.py dist/ASGTransformer

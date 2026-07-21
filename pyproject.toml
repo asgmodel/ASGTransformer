@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "asg-transformer"
-version = "6.0.0"
-description = "Transformer-based cyber attack scenario intelligence API"
+version = "7.0.0"
+description = "Hugging Face-compatible defensive cybersecurity scenario generation model"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

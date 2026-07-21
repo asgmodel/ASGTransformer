@@ -1,51 +1,49 @@
-# ASGTransformer on Hugging Face Transformers
+# Hugging Face Hub Deployment
 
-## Standard loading
-
-```python
-from transformers import AutoTokenizer, AutoModelForCausalLM
-
-tokenizer = AutoTokenizer.from_pretrained(
-    "asgmodel/ASGTransformer",
-    trust_remote_code=True,
-)
-model = AutoModelForCausalLM.from_pretrained(
-    "asgmodel/ASGTransformer",
-    trust_remote_code=True,
-)
-```
-
-`trust_remote_code=True` is required because ASGTransformer is a custom
-architecture not bundled inside the upstream Transformers package.
-
-## Single checkpoint architecture
-
-All trainable tensors are children of `ASGTransformerForCausalLM`:
-
-- `generator.*`: complete causal language model
-- `semantic_encoder.*`: semantic projection network
-- `duration_head.*`: duration classifier
-- `scenario_head.*`: scenario planning classifier
-
-They are saved by `save_pretrained(..., safe_serialization=True)` in one
-`model.safetensors` file unless automatic sharding is needed for a very large
-checkpoint. Even when sharded, all shards remain part of the same model
-repository and are loaded by one `from_pretrained()` call.
-
-The tokenizer, configuration, generation configuration, custom Python model
-code, prompt template, and knowledge assets are stored in the same repository.
-
-## Export from a base model
+## Build
 
 ```bash
 python scripts/export_transformers_model.py \
-  --base-model YOUR_BASE_CAUSAL_LM \
+  --base-model Qwen/Qwen2.5-0.5B-Instruct \
   --knowledge-dir data/processed \
   --output-dir dist/ASGTransformer
 ```
 
-Upload:
+## Verify
 
 ```bash
-huggingface-cli upload asgmodel/ASGTransformer dist/ASGTransformer .
+python scripts/verify_transformers_checkpoint.py dist/ASGTransformer
 ```
+
+## Authenticate
+
+```bash
+hf auth login
+```
+
+## Publish
+
+```bash
+python scripts/export_transformers_model.py \
+  --base-model Qwen/Qwen2.5-0.5B-Instruct \
+  --knowledge-dir data/processed \
+  --output-dir dist/ASGTransformer \
+  --repo-id asgmodel/ASGTransformer
+```
+
+## Load
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+model_id = "asgmodel/ASGTransformer"
+tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    trust_remote_code=True,
+    torch_dtype="auto",
+    device_map="auto",
+)
+```
+
+Custom model code requires `trust_remote_code=True`. Review the repository code before enabling it.

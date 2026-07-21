@@ -1,20 +1,23 @@
-from asg_transformer.models.asg_transformer import (
-    ASGTransformer,
+"""ASGTransformer public Python API."""
+
+from asg_transformer.hf import (
+    ASGTransformerCausalLMOutput,
     ASGTransformerConfig,
-    ASGTransformerOutput,
-    ASGUnifiedModel,
-    UnifiedScenarioOutput,
+    ASGTransformerForCausalLM,
+    ASGTransformerPreTrainedModel,
 )
 
-__version__ = "5.0.0"
+# Concise direct-construction alias. Hugging Face Auto Classes resolve the full
+# ASGTransformerForCausalLM architecture declared in config.json.
+ASGTransformer = ASGTransformerForCausalLM
+
+__version__ = "7.0.0"
 
 __all__ = [
     "ASGTransformer",
     "ASGTransformerConfig",
-    "ASGTransformerOutput",
-    "ASGUnifiedModel",
-    "UnifiedScenarioOutput",
+    "ASGTransformerPreTrainedModel",
+    "ASGTransformerForCausalLM",
+    "ASGTransformerCausalLMOutput",
     "__version__",
 ]
-
-from asg_transformer.hf import ASGTransformerConfig as HFASGTransformerConfig, ASGTransformerForCausalLM
