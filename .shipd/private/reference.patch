@@ -1,0 +1,6 @@
+diff --git a/file.py b/file.py
+--- a/file.py
++++ b/file.py
+@@ -1,3 +1,4 @@
+ existing
++changed
